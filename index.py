@@ -20,4 +20,4 @@ async def link(ctx):
     await ctx.send(getInfo)
 
 
-bot.run('MTEwNjQ5NDMxNTQzOTYwMzc0Mw.GF8CP3.thfpARSmzgrRIQQt6JXDpuK-rm7uz_tHRybVYI')
+bot.run('A')
