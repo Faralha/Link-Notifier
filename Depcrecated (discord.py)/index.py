@@ -38,6 +38,7 @@ async def on_ready():
 async def link(ctx):
     await ctx.send(embed=embedData())
 
+
 @bot.command()
 @commands.has_role('mods')
 async def admin(ctx):
