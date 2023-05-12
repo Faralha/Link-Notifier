@@ -5,6 +5,7 @@ const {token} = require('./token.json');
 
 //import ip and port from json
 let json = require('./get.json');
+const moment = require('moment');
 
 const PREFIX = '!';
 
@@ -24,10 +25,14 @@ client.on('interactionCreate', (interaction) => {
         interaction.reply('Test berhasil')
     }
 
-    if (interaction.commandName === 'link') {   
+    if (interaction.commandName === 'link') {
+        function localDate(){
+            return moment().format('dddd') + ", " + moment().format('Do MMMM YY')
+        };
         const linkEmbed = new EmbedBuilder()
             .setColor(5763719)
             .setTitle(json.ip)
+            .setDescription(localDate())
         interaction.reply({embeds: [linkEmbed]});
     };
 
