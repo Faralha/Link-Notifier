@@ -4,3 +4,4 @@ config.json
 get.json
 *.json
 config.json
+*.bat
