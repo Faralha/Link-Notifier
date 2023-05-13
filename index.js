@@ -1,47 +1,51 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { member, Client, Collection, Events, GatewayIntentBits, EmbedBuilder, GuildMember } = require('discord.js');
-const {token} = require('./token.json');
-
-//import ip and port from json
-let json = require('./get.json');
-const moment = require('moment');
-
-const PREFIX = '!';
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { token } = require('./config.json');
+const { type } = require('node:os');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
 
-client.once(Events.ClientReady, c => {
-    console.log('Ready!');
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+client.once(Events.ClientReady, () => {
+	console.log('Ready!');
+	client.user.setPresence({activities: [{name: 'Slash commands! | v0.0.4'}]});
 });
 
-client.on('interactionCreate', (interaction) => {
-    if (!interaction.isChatInputCommand()) {
-        return
-    }
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === 'test') {
-        interaction.reply('Test berhasil')
-    }
+	const command = client.commands.get(interaction.commandName);
 
-    if (interaction.commandName === 'link') {
-        function localDate(){
-            return moment().format('dddd') + ", " + moment().format('Do MMMM YY')
-        };
-        const linkEmbed = new EmbedBuilder()
-            .setColor(5763719)
-            .setTitle(json.ip)
-            .setDescription(localDate())
-        interaction.reply({embeds: [linkEmbed]});
-    };
+	if (!command) return;
 
-    if (interaction.commandName === 'start') {
-        if (interaction.memberPermissions.has('Administrator')) {
-            interaction.reply('Kamu adalah admin');
-        };
-        interaction.reply('Kamu bukan admin');
-    };
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
 });
 
-client.login(token)
+client.login(token);

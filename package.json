@@ -1,15 +1,14 @@
 {
-  "name": "notifier-bot",
-  "version": "0.0.3",
-  "description": "Simple ngrok tcp ip and port notifier to be sent to Discord bot. Module used : ngrok_info",
+  "name": "alpha-devv",
+  "version": "0.0.1",
+  "description": "alpha features to be implemented on main bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Faralha",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "moment": "^2.29.4"
+    "nodemon": "^2.0.22"
   }
 }
